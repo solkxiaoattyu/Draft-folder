@@ -705,8 +705,9 @@
         }
 
         /**
-         * 本地资源：按路径段编码后拼到站点根（http://127.0.0.1:5500/feigao/xxx.png），
-         * 避免 encodeURI + new URL 对已编码 % 的路径解析出错导致 404 / onerror 全走占位色。
+         * 本地资源：按路径段编码后，相对于当前页面 URL 解析。
+         * 这样在 GitHub Pages（子路径如 /Repo/）下也能正确得到 …/Repo/feigao/xxx.png；
+         * 若仍用 origin + 路径，会错误请求 …/feigao/… 导致 404。
          */
         function resolveAssetUrl(raw) {
             if (!raw || typeof raw !== 'string') return '';
@@ -719,7 +720,7 @@
                     return encodeURIComponent(seg);
                 }
             }).join('/');
-            return `${window.location.origin}/${encoded}`;
+            return new URL(encoded, window.location.href).href;
         }
 
         /**
