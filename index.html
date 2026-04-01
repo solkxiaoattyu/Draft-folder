@@ -2020,6 +2020,7 @@
         /** cloud 静态图：仅声明素材与视差；基础位置由 layoutConfig 统一控制 */
         const CLOUD_IMAGE_SCALE_MULTIPLIER = 5.76;
         const AREA_SCALE_130 = 1.14;
+        const AREA_SCALE_HALF = Math.SQRT1_2;
         const CLOUD_IMAGE_DATA = [
             { file: 'DA (1).png', width: 'min(11vw, 150px)', parallax: 0.88, distance: 140 },
             { file: 'DA (2).png', width: 'min(11vw, 150px)', parallax: 0.92, distance: 155 },
@@ -2030,9 +2031,9 @@
             { file: 'DA (7).jpg', width: 'min(11vw, 152px)', parallax: 0.82, distance: 150 },
             { file: 'DA (8).jpg', width: 'min(12vw, 164px)', parallax: 0.94, distance: 172 },
             { file: 'DA (9).png', width: 'min(11vw, 150px)', parallax: 0.86, distance: 145 },
-            { file: 'C (1).png', width: 'min(12vw, 168px)', parallax: 0.9, distance: 150, layoutId: 'sticker-10', scaleBoost: AREA_SCALE_130 },
-            { file: 'C (3).png', width: 'min(12vw, 166px)', parallax: 0.88, distance: 152, layoutId: 'sticker-11', scaleBoost: AREA_SCALE_130 },
-            { file: 'C (4).png', width: 'min(12vw, 170px)', parallax: 0.92, distance: 160, layoutId: 'sticker-12' },
+            { file: 'C (1).png', width: 'min(12vw, 168px)', parallax: 0.9, distance: 150, layoutId: 'sticker-10', scaleBoost: AREA_SCALE_130 * AREA_SCALE_HALF },
+            { file: 'C (3).png', width: 'min(12vw, 166px)', parallax: 0.88, distance: 152, layoutId: 'sticker-11', scaleBoost: AREA_SCALE_130 * AREA_SCALE_HALF },
+            { file: 'C (4).png', width: 'min(12vw, 170px)', parallax: 0.92, distance: 160, layoutId: 'sticker-12', scaleBoost: AREA_SCALE_HALF },
             { file: 'C (5).png', width: 'min(12vw, 166px)', parallax: 0.86, distance: 148, layoutId: 'sticker-13', scaleBoost: AREA_SCALE_130 },
             { file: 'C (6).png', width: 'min(12vw, 170px)', parallax: 0.9, distance: 156, layoutId: 'sticker-14', scaleBoost: AREA_SCALE_130 }
         ];

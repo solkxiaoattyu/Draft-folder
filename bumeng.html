@@ -112,6 +112,7 @@
         .hero-copy {
             opacity: 0;
             animation: heroCopyEnter 2.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            transition: opacity 0.45s ease, transform 0.45s ease, filter 0.45s ease;
         }
 
         @keyframes heroCopyEnter {
@@ -170,6 +171,39 @@
                 transform: translateY(-2px) scale(1.012);
             }
         }
+
+        #bumeng-end-note {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, calc(-50% + 10px));
+            z-index: 12;
+            text-align: center;
+            color: #F6F4F9;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.45s ease, transform 0.45s ease;
+            text-shadow: 0 2px 14px rgba(17, 22, 51, 0.35);
+        }
+
+        #bumeng-end-note.visible {
+            opacity: 1;
+            transform: translate(-50%, -50%);
+        }
+
+        #bumeng-end-title {
+            font-size: clamp(30px, 4.4vw, 56px);
+            letter-spacing: 0.12em;
+            line-height: 1;
+            font-weight: 700;
+        }
+
+        #bumeng-end-contact {
+            margin-top: 10px;
+            font-size: clamp(11px, 1.2vw, 16px);
+            letter-spacing: 0.06em;
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body class="text-[#F6F4F9]" vid="9">
@@ -178,6 +212,11 @@
     <div id="bumeng-bg" aria-hidden="true"></div>
 
     <div id="canvas-container" vid="14"></div>
+
+    <div id="bumeng-end-note" aria-live="polite">
+        <div id="bumeng-end-title">-END-</div>
+        <div id="bumeng-end-contact">Contact me：xiaoyu.solkatt@gmail.com</div>
+    </div>
 
     
     <div class="ui-layer flex items-center justify-center px-8 text-center" vid="15">
@@ -395,6 +434,8 @@
         let modelAnchors = [];
         let floatingGalleryItems = [];
         let hoveredFloatingMesh = null;
+        const heroCopy = document.querySelector('.hero-copy');
+        const bumengEndNote = document.getElementById('bumeng-end-note');
         let gltfLoader;
         let glowTexture;
         let raycaster, mouse;
@@ -1421,6 +1462,29 @@
             if(scrollPos < -maxScroll) { targetScrollPos = -maxScroll; }
             
             vortexGroup.position.y = scrollPos;
+
+            // 最后一屏：先让「草稿箱」文案淡出，再显示 END 文案
+            const fadeStart = maxScroll * 0.82;
+            const fadeEnd = maxScroll * 0.94;
+            const endReveal = maxScroll * 0.97;
+            const fadeProgress = Math.max(0, Math.min(1, (scrollPos - fadeStart) / Math.max(0.0001, (fadeEnd - fadeStart))));
+
+            if (heroCopy) {
+                if (fadeProgress > 0) {
+                    // Stop intro animation so JS-controlled fade values take effect deterministically.
+                    heroCopy.style.animation = 'none';
+                }
+                const heroOpacity = 1 - fadeProgress;
+                heroCopy.style.opacity = String(heroOpacity);
+                heroCopy.style.transform = `translateY(${-12 * fadeProgress}px)`;
+                heroCopy.style.filter = `blur(${8 * fadeProgress}px)`;
+                heroCopy.style.visibility = fadeProgress >= 1 ? 'hidden' : 'visible';
+            }
+
+            if (bumengEndNote) {
+                const heroFullyHidden = fadeProgress >= 1;
+                bumengEndNote.classList.toggle('visible', heroFullyHidden && scrollPos >= endReveal);
+            }
 
             updateBumengScrollBackground();
 
