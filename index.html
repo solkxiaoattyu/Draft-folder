@@ -1847,23 +1847,30 @@
                 window.location.reload();
                 return;
             }
-            if (key === 'pre-butterfly') {
-                window.location.reload();
-                return;
-            }
 
+            const wasScrollStageActive = scrollStageActive;
             if (!scrollStageActive) {
                 activateScrollStage();
             }
 
+            if (key === 'about' || key === 'pre-butterfly') {
+                const run = () => {
+                    const y = Math.max(0, getScrollStageYByProgress(BUTTERFLY_MASK_HINT_STAGE_PROGRESS));
+                    window.scrollTo({ top: y, behavior: 'smooth' });
+                    scheduleScrollStageFrame(true);
+                };
+                if (!wasScrollStageActive) {
+                    window.setTimeout(run, 160);
+                } else {
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(run);
+                    });
+                }
+                return;
+            }
+
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
-                    if (key === 'about') {
-                        const startY = Math.max(0, scrollStageStartY + 1);
-                        window.scrollTo({ top: startY, behavior: 'smooth' });
-                        scheduleScrollStageFrame(true);
-                        return;
-                    }
                     if (key === 'gallery') {
                         const galleryAppearProgress = Math.min(1, GALLERY_THRESHOLD + 0.08);
                         const y = getScrollStageYByProgress(galleryAppearProgress);
@@ -1905,39 +1912,61 @@
             const normalized = String(path || '').replace(/^cloud\//, '');
             return `${CLOUD_OSS_BASE}${encodeURIComponent(normalized)}`;
         }
+        function isAbsoluteHttpUrl(src) {
+            return /^https?:\/\//i.test(String(src || '').trim());
+        }
+        /** 相对路径用 encodeURI；已是 https 的 OSS 地址不要二次 encode（否则 % 会变成 %25 导致 404） */
+        function sanitizeMediaUrl(src) {
+            const raw = String(src || '').trim();
+            if (!raw) return '';
+            return isAbsoluteHttpUrl(raw) ? raw : encodeURI(raw);
+        }
+        function applyCrossOriginForCanvasMedia(el, url) {
+            const raw = String(url || '').trim();
+            if (!isAbsoluteHttpUrl(raw)) return;
+            try {
+                if (new URL(raw).origin !== window.location.origin) {
+                    el.crossOrigin = 'anonymous';
+                }
+            } catch (e) {
+                /* ignore */
+            }
+        }
         const SCROLL_STAGE_HEIGHT_VH = 2400;
         const GALLERY_THRESHOLD = 0.5;
+        /** 点击 about：滚到蝴蝶遮罩刚开始显现的进度（stageProgress 约 6%） */
+        const BUTTERFLY_MASK_HINT_STAGE_PROGRESS = 0.06;
         const OFFLINE_GALLERY_ITEMS = [
             {
-                src: toCloudOssUrl('cloud/demo1·西藏计划.mp4'),
+                src: 'https://xiaoyuplayer.oss-cn-shenzhen.aliyuncs.com/cloud/demo1%C2%B7%E8%A5%BF%E8%97%8F%E8%AE%A1%E5%88%92.mp4',
                 accent: 'rgba(165, 180, 252, 0.58)'
             },
             {
-                src: toCloudOssUrl("cloud/demo2·像素park'aicoding结课.mp4"),
+                src: 'https://xiaoyuplayer.oss-cn-shenzhen.aliyuncs.com/cloud/demo2%C2%B7%E5%83%8F%E7%B4%A0park%27aicoding%E7%BB%93%E8%AF%BE.mp4',
                 accent: 'rgba(125, 211, 252, 0.58)'
             },
             {
-                src: toCloudOssUrl("cloud/demo3·数字疗愈'结课.mp4"),
+                src: 'https://xiaoyuplayer.oss-cn-shenzhen.aliyuncs.com/cloud/demo3%C2%B7%E6%95%B0%E5%AD%97%E7%96%97%E6%84%88%27%E7%BB%93%E8%AF%BE.mp4',
                 accent: 'rgba(196, 181, 253, 0.58)'
             },
             {
-                src: toCloudOssUrl("cloud/demo4'泡泡玛特大广赛作品.mp4"),
+                src: 'https://xiaoyuplayer.oss-cn-shenzhen.aliyuncs.com/cloud/demo4%27%E6%B3%A1%E6%B3%A1%E7%8E%9B%E7%89%B9%E5%A4%A7%E5%B9%BF%E8%B5%9B%E4%BD%9C%E5%93%81.mp4',
                 accent: 'rgba(244, 114, 182, 0.48)'
             },
             {
-                src: toCloudOssUrl("cloud/demo5'宇宙之外.mp4"),
+                src: 'https://xiaoyuplayer.oss-cn-shenzhen.aliyuncs.com/cloud/demo5%27%E5%AE%87%E5%AE%99%E4%B9%8B%E5%A4%96.mp4',
                 accent: 'rgba(251, 191, 36, 0.52)'
             },
             {
-                src: toCloudOssUrl("cloud/demo6'动捕效果.mp4"),
+                src: 'https://xiaoyuplayer.oss-cn-shenzhen.aliyuncs.com/cloud/demo6%27%E5%8A%A8%E6%8D%95%E6%95%88%E6%9E%9C.mp4',
                 accent: 'rgba(52, 211, 153, 0.5)'
             },
             {
-                src: toCloudOssUrl("cloud/demo7'完美镜像.jpg"),
+                src: 'https://xiaoyuplayer.oss-cn-shenzhen.aliyuncs.com/cloud/demo7%27%E5%AE%8C%E7%BE%8E%E9%95%9C%E5%83%8F.jpg',
                 accent: 'rgba(248, 113, 113, 0.46)'
             },
             {
-                src: toCloudOssUrl("cloud/demo8'窗外青梅.mp4"),
+                src: 'https://xiaoyuplayer.oss-cn-shenzhen.aliyuncs.com/cloud/demo8%E2%80%98%E7%AA%97%E5%A4%96%E9%9D%92%E6%A2%85.mp4',
                 accent: 'rgba(129, 140, 248, 0.52)'
             }
         ];
@@ -2332,7 +2361,8 @@
             const tryNext = () => {
                 if (candidateIndex >= candidates.length) return;
                 const nextSrc = candidates[candidateIndex++];
-                video.src = encodeURI(nextSrc);
+                applyCrossOriginForCanvasMedia(video, nextSrc);
+                video.src = sanitizeMediaUrl(nextSrc);
                 video.load();
             };
 
@@ -2643,7 +2673,8 @@
                         ? image.naturalWidth / image.naturalHeight
                         : 1;
                 });
-                image.src = encodeURI(item.src);
+                applyCrossOriginForCanvasMedia(image, item.src);
+                image.src = sanitizeMediaUrl(item.src);
                 return state;
             });
 
@@ -3151,7 +3182,7 @@
                 shellEl.style.setProperty('--grain-opacity', String(0.1 + Math.random() * 0.1));
                 if (frameAsset) {
                     shellEl.classList.add('has-q-frame');
-                    shellEl.style.setProperty('--card-frame-image', `url("${encodeURI(frameAsset)}")`);
+                    shellEl.style.setProperty('--card-frame-image', `url("${sanitizeMediaUrl(frameAsset)}")`);
                 }
 
                 floatEl.style.animationDuration = `${(5.2 + Math.random() * 5).toFixed(2)}s`;
@@ -3161,7 +3192,7 @@
                 cardEl.style.zIndex = String(stackZ);
                 cardEl.dataset.initialZIndex = String(stackZ);
 
-                videoEl.dataset.managedSrc = encodeURI(data.video);
+                videoEl.dataset.managedSrc = sanitizeMediaUrl(data.video);
                 videoEl.dataset.managedSrcMode = 'attr';
                 videoEl.dataset.managedSrcReady = '1';
                 videoEl.dataset.managedReleased = '1';
