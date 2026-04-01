@@ -1900,39 +1900,44 @@
         const galleryInfo = document.getElementById('gallery-info');
         const galleryInfoTitle = document.getElementById('gallery-info-title');
         const galleryInfoDesc = document.getElementById('gallery-info-desc');
+        const CLOUD_OSS_BASE = 'https://xiaoyuplayer.oss-cn-shenzhen.aliyuncs.com/cloud/';
+        function toCloudOssUrl(path) {
+            const normalized = String(path || '').replace(/^cloud\//, '');
+            return `${CLOUD_OSS_BASE}${encodeURIComponent(normalized)}`;
+        }
         const SCROLL_STAGE_HEIGHT_VH = 2400;
         const GALLERY_THRESHOLD = 0.5;
         const OFFLINE_GALLERY_ITEMS = [
             {
-                src: 'cloud/demo1·西藏计划.mp4',
+                src: toCloudOssUrl('cloud/demo1·西藏计划.mp4'),
                 accent: 'rgba(165, 180, 252, 0.58)'
             },
             {
-                src: "cloud/demo2·像素park'aicoding结课.mp4",
+                src: toCloudOssUrl("cloud/demo2·像素park'aicoding结课.mp4"),
                 accent: 'rgba(125, 211, 252, 0.58)'
             },
             {
-                src: "cloud/demo3·数字疗愈'结课.mp4",
+                src: toCloudOssUrl("cloud/demo3·数字疗愈'结课.mp4"),
                 accent: 'rgba(196, 181, 253, 0.58)'
             },
             {
-                src: "cloud/demo4'泡泡玛特大广赛作品.mp4",
+                src: toCloudOssUrl("cloud/demo4'泡泡玛特大广赛作品.mp4"),
                 accent: 'rgba(244, 114, 182, 0.48)'
             },
             {
-                src: "cloud/demo5'宇宙之外.mp4",
+                src: toCloudOssUrl("cloud/demo5'宇宙之外.mp4"),
                 accent: 'rgba(251, 191, 36, 0.52)'
             },
             {
-                src: "cloud/demo6'动捕效果.mp4",
+                src: toCloudOssUrl("cloud/demo6'动捕效果.mp4"),
                 accent: 'rgba(52, 211, 153, 0.5)'
             },
             {
-                src: "cloud/demo7'完美镜像.jpg",
+                src: toCloudOssUrl("cloud/demo7'完美镜像.jpg"),
                 accent: 'rgba(248, 113, 113, 0.46)'
             },
             {
-                src: "cloud/demo8'窗外青梅.mp4",
+                src: toCloudOssUrl("cloud/demo8'窗外青梅.mp4"),
                 accent: 'rgba(129, 140, 248, 0.52)'
             }
         ];
@@ -1995,8 +2000,8 @@
         const CARD_DATA = [];
         /** 不参与「再缩小 0.8」的视频（仍为 0.8 基准 + 悬停 1.2 倍） */
         const COLLAGE_SCALE_EXEMPT_VIDEOS = new Set([
-            'cloud/demo1·西藏计划.mp4',
-            "cloud/demo5'宇宙之外.mp4"
+            toCloudOssUrl('cloud/demo1·西藏计划.mp4'),
+            toCloudOssUrl("cloud/demo5'宇宙之外.mp4")
         ]);
 
         function isCollageScaleExemptVideo(videoPath) {
@@ -2007,12 +2012,12 @@
             const match = String(videoPath || '').match(/demo(\d+)/i);
             if (!match) return '';
             const frameMap = {
-                1: 'cloud/Q1.png',
-                2: 'cloud/Q2.png',
-                3: 'cloud/Q3.png',
-                4: 'cloud/Q4.png',
-                5: 'cloud/Q5.png',
-                6: 'cloud/Q6.png'
+                1: toCloudOssUrl('cloud/Q1.png'),
+                2: toCloudOssUrl('cloud/Q2.png'),
+                3: toCloudOssUrl('cloud/Q3.png'),
+                4: toCloudOssUrl('cloud/Q4.png'),
+                5: toCloudOssUrl('cloud/Q5.png'),
+                6: toCloudOssUrl('cloud/Q6.png')
             };
             return frameMap[Number(match[1])] || '';
         }
@@ -3238,8 +3243,7 @@
                 img.loading = 'lazy';
                 img.decoding = 'async';
                 img.draggable = false;
-                // Encode each filename segment to safely handle spaces/parentheses on static hosts.
-                img.src = `cloud/${encodeURIComponent(data.file)}`;
+                img.src = toCloudOssUrl(`cloud/${data.file}`);
 
                 const collageInner = document.createElement('div');
                 collageInner.className = 'collage-inner collage-inner--compact';
