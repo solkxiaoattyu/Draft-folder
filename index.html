@@ -3237,7 +3237,8 @@
                 img.loading = 'lazy';
                 img.decoding = 'async';
                 img.draggable = false;
-                img.src = encodeURI(`cloud/${data.file}`);
+                // Encode each filename segment to safely handle spaces/parentheses on static hosts.
+                img.src = `cloud/${encodeURIComponent(data.file)}`;
 
                 const collageInner = document.createElement('div');
                 collageInner.className = 'collage-inner collage-inner--compact';
