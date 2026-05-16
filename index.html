@@ -1932,43 +1932,23 @@
                 /* ignore */
             }
         }
+        /** 圆形画廊静态图（oo 目录，相对当前页解析以兼容 GitHub Pages 子路径） */
+        function ooGallerySrc(filename) {
+            const encoded = encodeURIComponent(filename);
+            return new URL(encoded, new URL('oo/', window.location.href)).href;
+        }
         const SCROLL_STAGE_HEIGHT_VH = 2400;
         const GALLERY_THRESHOLD = 0.5;
         /** 点击 about：滚到蝴蝶遮罩刚开始显现的进度（stageProgress 约 6%） */
         const BUTTERFLY_MASK_HINT_STAGE_PROGRESS = 0.06;
         const OFFLINE_GALLERY_ITEMS = [
-            {
-                src: 'https://xiaoyuplayer.oss-cn-shenzhen.aliyuncs.com/cloud/demo1%C2%B7%E8%A5%BF%E8%97%8F%E8%AE%A1%E5%88%92.mp4',
-                accent: 'rgba(165, 180, 252, 0.58)'
-            },
-            {
-                src: 'https://xiaoyuplayer.oss-cn-shenzhen.aliyuncs.com/cloud/demo2%C2%B7%E5%83%8F%E7%B4%A0park%27aicoding%E7%BB%93%E8%AF%BE.mp4',
-                accent: 'rgba(125, 211, 252, 0.58)'
-            },
-            {
-                src: 'https://xiaoyuplayer.oss-cn-shenzhen.aliyuncs.com/cloud/demo3%C2%B7%E6%95%B0%E5%AD%97%E7%96%97%E6%84%88%27%E7%BB%93%E8%AF%BE.mp4',
-                accent: 'rgba(196, 181, 253, 0.58)'
-            },
-            {
-                src: 'https://xiaoyuplayer.oss-cn-shenzhen.aliyuncs.com/cloud/demo4%27%E6%B3%A1%E6%B3%A1%E7%8E%9B%E7%89%B9%E5%A4%A7%E5%B9%BF%E8%B5%9B%E4%BD%9C%E5%93%81.mp4',
-                accent: 'rgba(244, 114, 182, 0.48)'
-            },
-            {
-                src: 'https://xiaoyuplayer.oss-cn-shenzhen.aliyuncs.com/cloud/demo5%27%E5%AE%87%E5%AE%99%E4%B9%8B%E5%A4%96.mp4',
-                accent: 'rgba(251, 191, 36, 0.52)'
-            },
-            {
-                src: 'https://xiaoyuplayer.oss-cn-shenzhen.aliyuncs.com/cloud/demo6%27%E5%8A%A8%E6%8D%95%E6%95%88%E6%9E%9C.mp4',
-                accent: 'rgba(52, 211, 153, 0.5)'
-            },
-            {
-                src: 'https://xiaoyuplayer.oss-cn-shenzhen.aliyuncs.com/cloud/demo7%27%E5%AE%8C%E7%BE%8E%E9%95%9C%E5%83%8F.jpg',
-                accent: 'rgba(248, 113, 113, 0.46)'
-            },
-            {
-                src: 'https://xiaoyuplayer.oss-cn-shenzhen.aliyuncs.com/cloud/demo8%E2%80%98%E7%AA%97%E5%A4%96%E9%9D%92%E6%A2%85.mp4',
-                accent: 'rgba(129, 140, 248, 0.52)'
-            }
+            { src: ooGallerySrc('西藏计划.png'), accent: 'rgba(165, 180, 252, 0.58)' },
+            { src: ooGallerySrc("solkatt's park.png"), accent: 'rgba(125, 211, 252, 0.58)' },
+            { src: ooGallerySrc('Flower For Forever.png'), accent: 'rgba(196, 181, 253, 0.58)' },
+            { src: ooGallerySrc('转眸入梦.png'), accent: 'rgba(244, 114, 182, 0.48)' },
+            { src: ooGallerySrc('监视器.png'), accent: 'rgba(52, 211, 153, 0.5)' },
+            { src: ooGallerySrc('完美镜像.jpg'), accent: 'rgba(248, 113, 113, 0.46)' },
+            { src: ooGallerySrc('窗外青梅.png'), accent: 'rgba(129, 140, 248, 0.52)' }
         ];
         const GALLERY_DEMO_INFO = [
             {
@@ -1986,10 +1966,6 @@
             {
                 title: '转眸入梦',
                 description: '泡泡玛特Nyota概念片，大广赛获奖作品。<br/>镜头从现实滑入梦里，再从梦里回到清醒。<br/>Z世代的梦境不是逃离，而是换一种方式重新校准现实。'
-            },
-            {
-                title: '宇宙之外',
-                description: '基于生成模型（Midjourney、即梦、可灵）构建的幻想世界。<br/>画面由多个非现实意象构成，而意象本身：缓慢旋转的棱镜状宝石、具有生物质感的粉色毛绒植物、无明确结构的有机体形态等。<br/>“How long have you been with your mate?” “One hundred eighty six years.” “Wow. That\' s a long time.” “Not long enough.”'
             },
             {
                 title: '监视器',
@@ -2029,8 +2005,7 @@
         const CARD_DATA = [];
         /** 不参与「再缩小 0.8」的视频（仍为 0.8 基准 + 悬停 1.2 倍） */
         const COLLAGE_SCALE_EXEMPT_VIDEOS = new Set([
-            toCloudOssUrl('cloud/demo1·西藏计划.mp4'),
-            toCloudOssUrl("cloud/demo5'宇宙之外.mp4")
+            toCloudOssUrl('cloud/demo1·西藏计划.mp4')
         ]);
 
         function isCollageScaleExemptVideo(videoPath) {
